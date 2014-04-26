@@ -4,6 +4,7 @@ Api = {
   Device: class DeviceApi
     constructor: (@client, @id) ->
     push: (opts, cb) -> @client.post('/api/push', {audience: {device_token: @id}, device_types: 'all', notification: opts}, cb)
+    info: (cb) -> @client.get("/api/device_tokens/#{@id}", cb)
 }
 
 class UrbanAirship extends Rest
@@ -15,7 +16,6 @@ class UrbanAirship extends Rest
     
     auth: (key, secret) ->
       (request_opts, opts) ->
-        console.log('auth', {username: key, password: secret})
         request_opts.auth =
           username: key
           password: secret
@@ -31,7 +31,6 @@ class UrbanAirship extends Rest
   constructor: (@options = {}) ->
     super(base_url: @options.base_url or 'https://go.urbanairship.com')
     
-    console.log @options
     @hook('pre:request', UrbanAirship.hooks.json)
     @hook('pre:request', UrbanAirship.hooks.auth(@options.key, @options.secret)) if @options.key? and @options.secret?
     @hook('pre:post', UrbanAirship.hooks.json_body)

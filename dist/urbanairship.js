@@ -22,6 +22,10 @@
         }, cb);
       };
 
+      DeviceApi.prototype.info = function(cb) {
+        return this.client.get("/api/device_tokens/" + this.id, cb);
+      };
+
       return DeviceApi;
 
     })()
@@ -39,10 +43,6 @@
       },
       auth: function(key, secret) {
         return function(request_opts, opts) {
-          console.log('auth', {
-            username: key,
-            password: secret
-          });
           return request_opts.auth = {
             username: key,
             password: secret
@@ -69,7 +69,6 @@
       UrbanAirship.__super__.constructor.call(this, {
         base_url: this.options.base_url || 'https://go.urbanairship.com'
       });
-      console.log(this.options);
       this.hook('pre:request', UrbanAirship.hooks.json);
       if ((this.options.key != null) && (this.options.secret != null)) {
         this.hook('pre:request', UrbanAirship.hooks.auth(this.options.key, this.options.secret));

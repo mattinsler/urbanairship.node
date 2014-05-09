@@ -5,6 +5,10 @@ Api = {
     constructor: (@client, @id) ->
     push: (opts, cb) -> @client.post('/api/push', {audience: {device_token: @id}, device_types: 'all', notification: opts}, cb)
     info: (cb) -> @client.get("/api/device_tokens/#{@id}", cb)
+  
+  Devices: class DevicesApi
+    constructor: (@client, @ids) ->
+    push: (opts, cb) -> @client.post('/api/push', {audience: {'or': @ids.map (id) -> {device_token: id}}, device_types: 'all', notification: opts}, cb)
 }
 
 class UrbanAirship extends Rest
@@ -36,5 +40,6 @@ class UrbanAirship extends Rest
     @hook('pre:post', UrbanAirship.hooks.json_body)
   
   device: (id) -> new Api.Device(@, id)
+  devices: (ids) -> new Api.Devices(@, ids)
 
 module.exports = UrbanAirship
